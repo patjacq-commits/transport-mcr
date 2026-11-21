@@ -18,6 +18,9 @@ main{max-width:860px;margin:0 auto;padding:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}
 .bandeau{background:var(--warn-bg);border:2px solid #f0c27a;border-radius:12px;padding:14px 16px;margin-bottom:18px;transition:background .3s,border-color .3s}
 .bandeau b{color:var(--red-dark)}
+form.manque-on #f-naiss .req, form.manque-on #f-fact .req{display:none}
+.ac-item{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #e4e4ea}
+.ac-item.retard{color:var(--red-dark)}
 .bandeau.urgent{background:#fde8ec;border-color:var(--red);animation:pulse-brd .6s ease-out}
 @keyframes pulse-brd{0%{box-shadow:0 0 0 0 rgba(200,16,46,.4)}70%{box-shadow:0 0 0 8px rgba(200,16,46,0)}100%{box-shadow:0 0 0 0 rgba(200,16,46,0)}}
 h2{margin:0 0 12px;font-size:1.25em;display:flex;align-items:center;gap:10px}
@@ -216,6 +219,12 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font
     <button type="button" class="mode" id="mode-annul">✖ Annuler une demande envoyée</button>
   </div>
 
+  <section class="card" id="a-completer" hidden>
+    <h2>📌 Informations à transmettre à la Croix-Rouge</h2>
+    <p class="hint">Résidents arrivés récemment dont il manquait des informations (mémorisé sur cet ordinateur).</p>
+    <div id="ac-liste"></div>
+  </section>
+
   <div class="bandeau" id="bandeau-delai">
     <span id="bandeau-urgent" hidden>⚠ <b>Votre transport est dans moins de 5 jours ouvrables : ce formulaire ne suffit pas.</b><br></span>
     📞 <b>Demande à moins de 5 jours ouvrables ?</b> Téléphonez au <b data-cfg="tel"></b> (<span data-cfg="horaires"></span>). Si personne ne répond, attendez la fin des sonneries et laissez un message vocal. Envoyez aussi un mail à <a href="mailto:transports.mcr.drlagneau@croix-rouge.be" style="color:inherit">transports.mcr.drlagneau@croix-rouge.be</a>.<br>
@@ -230,7 +239,7 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font
     <section class="card">
       <h2><span class="num">1</span>Qui fait la demande ?</h2>
       <div class="grid">
-        <div class="field" id="f-dem-nom"><label>Votre nom <span class="req">*</span><input type="text" id="dem-nom" maxlength="60"></label><p class="err"></p></div>
+        <div class="field" id="f-dem-nom"><label>Votre prénom <span class="req">*</span><input type="text" id="dem-nom" maxlength="60"></label><p class="err"></p></div>
         <div class="field" id="f-dem-fonction"><label>Votre fonction<span class="hint">ex. infirmière, secrétaire</span><input type="text" id="dem-fonction" spellcheck="true" maxlength="40"></label><p class="err"></p></div>
       </div>
       <div class="field" id="f-dem-tel"><label>Téléphone pour vous joindre <span class="req">*</span><span class="hint">Numéro de la maison de repos rempli d'office. Modifiez-le si la Croix-Rouge doit appeler un autre numéro.</span><input type="tel" id="dem-tel" maxlength="25" inputmode="tel" value=""></label><p class="err"></p></div>
@@ -250,6 +259,11 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font
           <label class="choice"><input type="radio" name="premier" value="Oui"><span>Oui</span></label>
           <label class="choice"><input type="radio" name="premier" value="Non"><span>Non</span></label>
         </div><p class="err"></p>
+      </div>
+      <label class="coche" id="f-manque-case"><input type="checkbox" id="c-manque"><span><b>Résident arrivé récemment : il me manque encore des informations</b><span class="hint" style="display:block">Date de naissance, facturation… Vous pouvez créer la demande sans ces informations et les transmettre plus tard.</span></span></label>
+      <div class="sous-coche" id="f-manque" hidden>
+        <p class="hint" style="margin:0 0 8px">La date de naissance et la facturation ne sont plus obligatoires. Remplissez ce que vous avez déjà. Un rappel vous sera proposé pour transmettre le reste.</p>
+        <div class="field" id="f-manque-autre"><label>Autre information manquante <span class="hint">Facultatif – ex. numéro de mutuelle, personne de contact</span><input type="text" id="manque-autre" maxlength="100"></label><p class="err"></p></div>
       </div>
       <label class="coche" id="f-bimchange" hidden style="border:none;margin:-6px 0 6px 8px"><input type="checkbox" id="c-bimchange"><span>Le <b>statut BIM</b> de ce résident a changé <span class="hint" style="display:inline">(facultatif)</span></span></label>
       <div class="field sous-coche" id="f-bim" hidden><label>Ancienne vignette de mutuelle <span class="hint">Facultatif – seulement si le résident a encore une ancienne vignette avec 6 chiffres, ex. 110110 (les barres s'ajoutent toutes seules). Les nouvelles vignettes n'ont plus ces chiffres.</span><input type="text" id="vignette" inputmode="numeric" maxlength="7" placeholder="000/000"></label><p class="err"></p>
@@ -467,6 +481,15 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font
         <div class="sous-coche" id="b-accomp" hidden>
           <div class="field" id="f-mo-accomp"><label>Accompagnants <span class="req">*</span><span class="hint">ex. sa fille l'accompagne, plus d'accompagnant…</span><input type="text" id="mo-accomp" spellcheck="true" maxlength="150"></label><p class="err"></p></div>
         </div>
+        <label class="coche"><input type="checkbox" class="mq" id="mq-infos" data-b="b-infos"><span><b>Informations du résident à compléter</b> (date de naissance, facturation…)</span></label>
+        <div class="sous-coche" id="b-infos" hidden>
+          <div class="field" id="f-mo-infos"><p class="hint" style="margin:0 0 6px">Remplissez ce que vous avez maintenant (au moins une case).</p><p class="err"></p>
+            <div class="field" id="f-mo-i-naiss"><label>Date de naissance<span class="hint">Tapez uniquement les chiffres, ex. 05031938</span><input type="text" id="mo-i-naiss" inputmode="numeric" maxlength="10" placeholder="JJ/MM/AAAA"></label><p class="err"></p></div>
+            <div class="field"><label>Facturation<span class="hint">Qui paie (famille, CPAS, la personne elle-même…), nom, adresse, téléphone ou e-mail, factures par courrier ou par e-mail</span><textarea id="mo-i-fact" spellcheck="true" maxlength="400"></textarea></label></div>
+            <div class="field"><label>Mutuelle<span class="hint">Numéro de la vignette (6 chiffres) ou attestation de la mutuelle envoyée</span><input type="text" id="mo-i-mut" maxlength="100"></label></div>
+            <div class="field"><label>Autre information<textarea id="mo-i-autre" spellcheck="true" maxlength="300"></textarea></label></div>
+          </div>
+        </div>
         <label class="coche"><input type="checkbox" class="mq" id="mq-autre" data-b="b-autre"><span><b>Autre chose</b></span></label>
         <div class="sous-coche" id="b-autre" hidden>
           <div class="field" id="f-mo-autre"><label>Autre changement <span class="req">*</span><textarea id="mo-autre" spellcheck="true" maxlength="400"></textarea></label><p class="err"></p></div>
@@ -475,7 +498,7 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font
 
       <h3 style="margin:10px 0 4px">Qui fait la modification ?</h3>
       <div class="grid">
-        <div class="field" id="f-mo-dem-nom"><label>Votre nom <span class="req">*</span><input type="text" id="mo-dem-nom" maxlength="60"></label><p class="err"></p></div>
+        <div class="field" id="f-mo-dem-nom"><label>Votre prénom <span class="req">*</span><input type="text" id="mo-dem-nom" maxlength="60"></label><p class="err"></p></div>
         <div class="field" id="f-mo-dem-tel"><label>Téléphone <span class="req">*</span><span class="hint">Numéro de la maison de repos par défaut</span><input type="tel" id="mo-dem-tel" maxlength="25" inputmode="tel" value=""></label><p class="err"></p></div>
       </div>
     </section>
@@ -510,7 +533,7 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font
 
       <h3 style="margin:10px 0 4px">Qui annule ?</h3>
       <div class="grid">
-        <div class="field" id="f-an-dem-nom"><label>Votre nom <span class="req">*</span><input type="text" id="an-dem-nom" maxlength="60"></label><p class="err"></p></div>
+        <div class="field" id="f-an-dem-nom"><label>Votre prénom <span class="req">*</span><input type="text" id="an-dem-nom" maxlength="60"></label><p class="err"></p></div>
         <div class="field" id="f-an-dem-tel"><label>Téléphone <span class="req">*</span><span class="hint">Numéro de la maison de repos par défaut</span><input type="tel" id="an-dem-tel" maxlength="25" inputmode="tel" value=""></label><p class="err"></p></div>
       </div>
     </section>
@@ -526,6 +549,11 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font
     <p>Relisez-la. Si tout est correct, cliquez sur <b>« Envoyer par mail »</b>.</p>
     <p class="hint">Destinataire : <b><span data-cfg="destNom"></span> – <span data-cfg="destAdr"></span></b> (<span data-cfg="email"></span>)<br>Objet du mail : <b id="recap-subject"></b></p>
     <div id="recap-text"></div>
+    <div class="bandeau" id="rappel-manque" hidden style="margin-top:12px">
+      <b>⏰ À ne pas oublier</b>
+      <p id="rappel-txt" style="margin:6px 0 8px"></p>
+      <button type="button" class="btn btn-sec" id="btn-ics">📅 Ajouter un rappel à mon agenda</button>
+    </div>
     <div class="btn-row">
       <button type="button" class="btn btn-ok" id="btn-mail">✉ Envoyer par mail</button>
       <button type="button" class="btn btn-sec" id="btn-copy">📋 Copier le texte</button>
@@ -974,7 +1002,7 @@ $('#date').addEventListener('input', updBandeauUrgent);
 $('#date').addEventListener('change', updBandeauUrgent);
 
 /* --- Date de naissance : ajout automatique des / --- */
-['#naiss','#an-naiss','#mo-naiss'].forEach(sel => {
+['#naiss','#an-naiss','#mo-naiss','#mo-i-naiss'].forEach(sel => {
   const naiss = $(sel);
   naiss.addEventListener('input', () => {
     const d = naiss.value.replace(/\D/g,'').slice(0,8);
@@ -1742,13 +1770,13 @@ function validate(){
   errors = [];
   $$('.field.has-error').forEach(f => { f.classList.remove('has-error'); f.querySelector('.err').textContent=''; });
 
-  if (!val('dem-nom')) err($('#f-dem-nom'), 'Indiquez votre nom.');
+  if (!val('dem-nom')) err($('#f-dem-nom'), 'Indiquez votre prénom.');
   if (!val('dem-tel')) err($('#f-dem-tel'), 'Indiquez un numéro pour vous joindre.');
   else if (val('dem-tel').replace(/\D/g,'').length < 9) err($('#f-dem-tel'), 'Ce numéro semble incomplet.');
 
   if (!val('nom')) err($('#f-nom'), 'Indiquez le NOM du bénéficiaire.');
   if (!val('prenom')) err($('#f-prenom'), 'Indiquez le prénom du bénéficiaire.');
-  if (!val('naiss')) err($('#f-naiss'), 'Indiquez la date de naissance.');
+  if (!val('naiss')){ if (!manqueOn()) err($('#f-naiss'), 'Indiquez la date de naissance.'); }
   else if (!validBirth(val('naiss'))) err($('#f-naiss'), 'Date incorrecte. Format attendu : JJ/MM/AAAA, par exemple 05/03/1938.');
   if (!radio('premier')) err($('#f-premier'), 'Répondez oui ou non.');
   if (!$('#f-bim').hidden && vign.value && !vignOk()) err($('#f-bim'), 'Recopiez les 6 chiffres de la vignette (ex. 110/110), ou laissez le champ vide.');
@@ -1842,7 +1870,9 @@ function build(){
 
   L.push('DEMANDE DE TRANSPORT NON URGENT');
   T('RÉSIDENT');
-  L.push(nom+' '+prenom+', né(e) le '+val('naiss')+(nouveau ? ' (nouveau résident)' : ''));
+  L.push(nom+' '+prenom+', '+(val('naiss') ? 'né(e) le '+val('naiss') : 'date de naissance non communiquée')+(nouveau ? ' (nouveau résident)' : ''));
+  const manque = manqueOn() ? listeManque() : [];
+  if (manque.length) L.push('(!) DONNÉES MANQUANTES : '+manque.join(', ')+'. À transmettre dès que possible par la maison de repos.');
   L.push(besoins.join(' - '));
   if (val('mob-rem')) L.push('Remarque mobilité : '+val('mob-rem'));
   if (radio('seul')==='Non') L.push('NE PEUT PAS rester seul(e) en salle d\'attente');
@@ -1875,11 +1905,12 @@ function build(){
     T('FACTURATION (nouveau résident)');
     const F = t => L.push(RETRAIT+t);
     F(texteBim());
-    F(val('fac-qual')+' : '+[val('fac-nom'), val('fac-prenom')].filter(Boolean).join(' '));
-    F(val('fac-rue')+', '+val('fac-cp')+' '+val('fac-ville')+(norm(val('fac-pays'))==='belgique' ? '' : ', '+val('fac-pays')));
+    if (val('fac-qual') || val('fac-nom')) F((val('fac-qual') ? val('fac-qual')+' : ' : '')+[val('fac-nom'), val('fac-prenom')].filter(Boolean).join(' '));
+    if (val('fac-rue') || val('fac-cp') || val('fac-ville')) F([val('fac-rue'), [val('fac-cp'), val('fac-ville')].filter(Boolean).join(' ')].filter(Boolean).join(', ')+(norm(val('fac-pays'))==='belgique' || !val('fac-pays') ? '' : ', '+val('fac-pays')));
     const c = contacts('#fac-tels').concat(contacts('#fac-mails'));
     if (c.length) F(c.join(' - '));
-    F('Factures par '+radio('fac-recep').toLowerCase());
+    if (radio('fac-recep')) F('Factures par '+radio('fac-recep').toLowerCase());
+    if (!val('fac-qual') && !val('fac-nom') && !val('fac-rue')) F('Informations de facturation : à communiquer par la maison de repos');
     if (val('fac-info')) F(val('fac-info'));
   }
 
@@ -1887,7 +1918,7 @@ function build(){
   L.push(val('dem-nom')+(val('dem-fonction') ? ' ('+val('dem-fonction')+')' : '')+' - '+HOME.nom+' - '+val('dem-tel'));
 
   return {
-    subject: 'Demande de transport – '+nom+' '+prenom+' – '+fmtShort(date)+' – '+HOME.nom,
+    subject: (manque.length ? '[À COMPLÉTER] ' : '')+'Demande de transport – '+nom+' '+prenom+' – '+fmtShort(date)+' – '+HOME.nom,
     body: L.join('\n')
   };
 }
@@ -2005,20 +2036,21 @@ $('#fac-qual').addEventListener('change', () => {
 const mailOk = m => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m);
 function validateFact(){
   if ($('#f-fact').hidden) return;
-  if (!val('fac-qual')) err($('#f-fac-qual'), 'Choisissez la qualité de la personne à facturer.');
-  if (!val('fac-nom')) err($('#f-fac-nom'), 'Indiquez le nom.');
-  if (!val('fac-prenom') && norm(val('fac-qual'))!=='maison de repos' && norm(val('fac-qual'))!=='cpas') err($('#f-fac-prenom'), 'Indiquez le prénom.');
-  if (!val('fac-rue')) err($('#f-fac-rue'), "Indiquez la rue et le numéro.");
-  if (!val('fac-cp')) err($('#f-fac-cp'), 'Indiquez le code postal.');
+  const m = manqueOn(), req = (el, msg) => { if (!m) err(el, msg); };
+  if (!val('fac-qual')) req($('#f-fac-qual'), 'Choisissez la qualité de la personne à facturer.');
+  if (!val('fac-nom')) req($('#f-fac-nom'), 'Indiquez le nom.');
+  if (!val('fac-prenom') && norm(val('fac-qual'))!=='maison de repos' && norm(val('fac-qual'))!=='cpas') req($('#f-fac-prenom'), 'Indiquez le prénom.');
+  if (!val('fac-rue')) req($('#f-fac-rue'), "Indiquez la rue et le numéro.");
+  if (!val('fac-cp')) req($('#f-fac-cp'), 'Indiquez le code postal.');
   else if (facBelge() && !/^\d{4}$/.test(val('fac-cp'))) err($('#f-fac-cp'), 'Un code postal belge a 4 chiffres.');
-  if (!val('fac-ville')) err($('#f-fac-ville'), 'Indiquez la localité.');
-  if (!val('fac-pays')) err($('#f-fac-pays'), 'Indiquez le pays.');
+  if (!val('fac-ville')) req($('#f-fac-ville'), 'Indiquez la localité.');
+  if (!val('fac-pays')) req($('#f-fac-pays'), 'Indiquez le pays.');
   Array.from($('#fac-mails').children).forEach(d => {
     const v = d.querySelector('.ct').value.trim();
     if (v && !mailOk(v)) err(d, 'Cette adresse e-mail semble incorrecte.');
   });
-  if (!radio('fac-recep')) err($('#f-fac-recep'), 'Choisissez : courrier électronique ou courrier postal.');
-  else if (radio('fac-recep')==='Courrier électronique' && !contacts('#fac-mails').length) err($('#fac-mails').firstElementChild, 'Indiquez au moins un e-mail pour recevoir les factures.');
+  if (!radio('fac-recep')) req($('#f-fac-recep'), 'Choisissez : courrier électronique ou courrier postal.');
+  else if (radio('fac-recep')==='Courrier électronique' && !contacts('#fac-mails').length) req($('#fac-mails').firstElementChild, 'Indiquez au moins un e-mail pour recevoir les factures.');
 }
 const RETRAIT = '     ';   /* facturation : lignes en retrait */
 
@@ -2071,7 +2103,7 @@ function validateAnnul(){
   if (!d) err($('#f-an-date'), 'Indiquez la date du transport à annuler.');
   else if (d < TODAY) err($('#f-an-date'), 'Cette date est déjà passée.');
   if (!val('an-raison')) err($('#f-an-raison'), "Indiquez la raison de l'annulation.");
-  if (!val('an-dem-nom')) err($('#f-an-dem-nom'), 'Indiquez votre nom.');
+  if (!val('an-dem-nom')) err($('#f-an-dem-nom'), 'Indiquez votre prénom.');
   if (!val('an-dem-tel')) err($('#f-an-dem-tel'), 'Indiquez un numéro pour vous joindre.');
   else if (val('an-dem-tel').replace(/\D/g,'').length < 9) err($('#f-an-dem-tel'), 'Ce numéro semble incomplet.');
   return errors.length === 0;
@@ -2150,7 +2182,7 @@ function validateModif(){
   $$('#form-modif .field.has-error').forEach(f => { f.classList.remove('has-error'); f.querySelector('.err').textContent=''; });
   if (!val('mo-nom')) err($('#f-mo-nom'), 'Indiquez le NOM du bénéficiaire.');
   if (!val('mo-prenom')) err($('#f-mo-prenom'), 'Indiquez le prénom du bénéficiaire.');
-  if (!val('mo-naiss')) err($('#f-mo-naiss'), 'Indiquez la date de naissance.');
+  if (!val('mo-naiss')){ if (!$('#mq-infos').checked) err($('#f-mo-naiss'), 'Indiquez la date de naissance (ou cochez « Informations du résident à compléter » plus bas si elle manque encore).'); }
   else if (!validBirth(val('mo-naiss'))) err($('#f-mo-naiss'), 'Date incorrecte. Format attendu : JJ/MM/AAAA, par exemple 05/03/1938.');
   const d = $('#mo-date').value;
   if (!d) err($('#f-mo-date'), 'Indiquez la date du transport.');
@@ -2179,8 +2211,12 @@ function validateModif(){
   if (coche('#mq-dest') && !val('mo-ndest')) err($('#f-mo-ndest'), 'Indiquez la nouvelle destination.');
   if (coche('#mq-besoins') && !val('mo-besoins')) err($('#f-mo-besoins'), 'Précisez ce qui change.');
   if (coche('#mq-accomp') && !val('mo-accomp')) err($('#f-mo-accomp'), 'Précisez les accompagnants.');
+  if (coche('#mq-infos')){
+    if (!['mo-i-naiss','mo-i-fact','mo-i-mut','mo-i-autre'].some(id => val(id))) err($('#f-mo-infos'), 'Remplissez au moins une information.');
+    if (val('mo-i-naiss') && !validBirth(val('mo-i-naiss'))) err($('#f-mo-i-naiss'), 'Date incorrecte. Format attendu : JJ/MM/AAAA, par exemple 05/03/1938.');
+  }
   if (coche('#mq-autre') && !val('mo-autre')) err($('#f-mo-autre'), 'Précisez le changement.');
-  if (!val('mo-dem-nom')) err($('#f-mo-dem-nom'), 'Indiquez votre nom.');
+  if (!val('mo-dem-nom')) err($('#f-mo-dem-nom'), 'Indiquez votre prénom.');
   if (!val('mo-dem-tel')) err($('#f-mo-dem-tel'), 'Indiquez un numéro pour vous joindre.');
   else if (val('mo-dem-tel').replace(/\D/g,'').length < 9) err($('#f-mo-dem-tel'), 'Ce numéro semble incomplet.');
   return errors.length === 0;
@@ -2194,7 +2230,7 @@ function buildModif(){
   if (estTardif(proche)){ L.push(''); L.push('⚠ MODIFICATION TARDIVE – transport le '+fmtLong(proche)); }
   L.push('');
   L.push('TRANSPORT CONCERNÉ');
-  L.push('Bénéficiaire : '+nom+' '+prenom+' (né(e) le '+val('mo-naiss')+')');
+  L.push('Bénéficiaire : '+nom+' '+prenom+' ('+(val('mo-naiss') ? 'né(e) le '+val('mo-naiss') : 'date de naissance non communiquée')+')');
   L.push('Date du transport prévue : '+fmtLong(d));
   if (val('mo-serie')) L.push('Série : '+({date:'seulement cette date',suite:'cette date et toutes les suivantes',tout:'toute la série'})[val('mo-serie')]);
   if (val('mo-dest')) L.push('Destination : '+val('mo-dest'));
@@ -2209,12 +2245,19 @@ function buildModif(){
   if (val('mo-ndest')) L.push('Destination : '+val('mo-ndest'));
   if (val('mo-besoins')) L.push('Besoins : '+val('mo-besoins'));
   if (val('mo-accomp')) L.push('Accompagnants : '+val('mo-accomp'));
+  if ($('#mq-infos').checked){
+    L.push("Informations du résident à compléter :");
+    if (val('mo-i-naiss')) L.push('   Date de naissance : '+val('mo-i-naiss'));
+    if (val('mo-i-fact')) L.push('   Facturation : '+val('mo-i-fact'));
+    if (val('mo-i-mut')) L.push('   Mutuelle : '+val('mo-i-mut'));
+    if (val('mo-i-autre')) L.push('   Autre : '+val('mo-i-autre'));
+  }
   if (val('mo-autre')) L.push('Autre changement : '+val('mo-autre'));
   L.push('');
   L.push('DEMANDÉ PAR');
   L.push(val('mo-dem-nom')+' - '+HOME.nom+' - '+val('mo-dem-tel'));
   return {
-    subject: 'Modification de transport – '+nom+' '+prenom+' – '+fmtShort(d)+(nd ? ' → '+fmtShort(nd) : '')+' – '+HOME.nom,
+    subject: ($('#mq-infos').checked ? '[INFOS RÉSIDENT] ' : '')+'Modification de transport – '+nom+' '+prenom+' – '+fmtShort(d)+(nd ? ' → '+fmtShort(nd) : '')+' – '+HOME.nom,
     body: L.join('\n')
   };
 }
@@ -2232,6 +2275,7 @@ function setMode(m){
   if (typeof updBandeauUrgent==='function') updBandeauUrgent();
   $('#recap').hidden = true;
   $('.modes').hidden = false;
+  if (typeof majACompleter==='function') majACompleter();
 }
 $('#mode-new').addEventListener('click', () => setMode('new'));
 $('#mode-annul').addEventListener('click', () => setMode('annul'));
@@ -2274,6 +2318,8 @@ function showRecap(){
   Object.values(FORMS).forEach(f => { $(f).hidden = true; });
   $('#aide-card').hidden = true; $('#bandeau-delai').hidden = true; $('.modes').hidden = true;
   $('#apres-envoi').hidden = true;
+  $('#a-completer').hidden = true;
+  prepRappel();
   $('#recap').hidden = false;
   window.scrollTo(0,0);
 }
@@ -2331,6 +2377,7 @@ $('#btn-mail').addEventListener('click', () => {
   let url = base + encodeURIComponent(current.body.replace(/\n/g,'\r\n'));
   const long = url.length > CONFIG.mailMax;
   if (long) url = base + encodeURIComponent('>>> Cliquez ici puis appuyez sur Ctrl + V pour coller la demande <<<\r\n\r\n');
+  if (rappelCourant) sauverAC(rappelCourant);
   sent = true; leaving = true;
   setTimeout(() => { leaving = false; }, 2000);
   window.location.href = url;
@@ -2354,11 +2401,89 @@ window.addEventListener('beforeunload', e => {
   if (dirty && !sent && !leaving){ e.preventDefault(); e.returnValue = ''; }
 });
 
+
+/* ====== Résident arrivé récemment : informations manquantes + rappel ====== */
+const manqueOn = () => $('#c-manque').checked;
+function facIncomplet(){
+  if ($('#f-fact').hidden) return false;
+  if (['fac-qual','fac-nom','fac-rue','fac-cp','fac-ville'].some(id => !val(id)) || !radio('fac-recep')) return true;
+  return radio('fac-recep')==='Courrier électronique' && !contacts('#fac-mails').length;
+}
+function listeManque(){
+  const l = [];
+  if (!val('naiss')) l.push('date de naissance');
+  if (facIncomplet()) l.push('facturation (qui paie, adresse)');
+  if (val('manque-autre')) l.push(val('manque-autre'));
+  return l;
+}
+function majManque(){
+  $('#f-manque').hidden = !manqueOn();
+  $('#form').classList.toggle('manque-on', manqueOn());
+  if (!manqueOn()) $('#manque-autre').value = '';
+}
+$('#c-manque').addEventListener('change', majManque);
+/* échéance : 3 jours ouvrables */
+function ajouterOuvrables(n){ const d = new Date(); d.setHours(0,0,0,0); for (let k=0; k<n;){ d.setDate(d.getDate()+1); if (ouvrable(d)) k++; } return iso(d); }
+const CLE_AC = 'aCompleter-' + HOME.court;
+const lireAC = () => { try { return JSON.parse(localStorage.getItem(CLE_AC) || '[]'); } catch(e){ return []; } };
+const ecrireAC = l => { try { localStorage.setItem(CLE_AC, JSON.stringify(l)); } catch(e){} };
+let rappelCourant = null;
+function prepRappel(){
+  const box = $('#rappel-manque');
+  const l = (mode==='new' && manqueOn()) ? listeManque() : [];
+  if (!l.length){ rappelCourant = null; box.hidden = true; return; }
+  rappelCourant = { nom: val('nom').toUpperCase(), prenom: val('prenom'), manque: l, echeance: ajouterOuvrables(3), transport: $('#date').value };
+  $('#rappel-txt').innerHTML = 'Il manque : <b>'+esc(l.join(', '))+'</b>.<br>Transmettez-le à la Croix-Rouge <b>avant le '+esc(fmtLong(rappelCourant.echeance))+'</b> (3 jours ouvrables) : cliquez sur « Modifier une demande », puis cochez « Informations du résident à compléter ».<br>Dès l\'envoi du mail, ce rappel est mémorisé sur cet ordinateur et s\'affichera à chaque ouverture du formulaire, jusqu\'à ce que vous cliquiez sur « C\'est fait ».';
+  box.hidden = false;
+}
+function sauverAC(r){
+  const cle = x => norm(x.nom+'|'+x.prenom+'|'+x.transport);
+  ecrireAC(lireAC().filter(x => cle(x)!==cle(r)).concat([r]));
+}
+$('#btn-ics').addEventListener('click', () => {
+  const r = rappelCourant; if (!r) return;
+  const j = r.echeance.replace(/-/g,''), nx = new Date(r.echeance+'T00:00:00'); nx.setDate(nx.getDate()+1);
+  const f = x => String(x).replace(/\\/g,'\\\\').replace(/;/g,'\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//MCR Opont//Transport//FR','BEGIN:VEVENT',
+    'UID:'+Date.now()+'@transport-mcr','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,''),
+    'DTSTART;VALUE=DATE:'+j,'DTEND;VALUE=DATE:'+iso(nx).replace(/-/g,''),
+    'SUMMARY:'+f('Transport Croix-Rouge : compléter le dossier de '+r.nom+' '+r.prenom),
+    'DESCRIPTION:'+f('À transmettre à '+CONFIG.destNom+' : '+r.manque.join(', ')+'. Mail : '+CONFIG.email+' - Tél. : '+CONFIG.tel),
+    'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Rappel','TRIGGER;RELATED=START:PT9H','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([ics], { type:'text/calendar' }));
+  a.download = 'rappel-transport.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('Rappel téléchargé : ouvrez le fichier pour l\'ajouter à votre agenda.');
+});
+function majACompleter(){
+  const l = lireAC().sort((a,b) => a.echeance.localeCompare(b.echeance));
+  const box = $('#a-completer');
+  box.hidden = !l.length;
+  const ul = $('#ac-liste'); ul.innerHTML = '';
+  l.forEach(r => {
+    const d = document.createElement('div');
+    const retard = r.echeance < TODAY;
+    d.className = 'ac-item'+(retard ? ' retard' : '');
+    d.innerHTML = '<span><b>'+esc(r.nom+' '+r.prenom)+'</b> – manque : '+esc(r.manque.join(', '))+'<br><span class="hint">'+(retard ? '⚠ En retard : à transmettre avant le ' : 'À transmettre avant le ')+esc(fmtShort(r.echeance))+'</span></span>'
+      +'<span><button type="button" class="link ac-comp">Compléter</button> · <button type="button" class="link ac-fait">C\'est fait</button></span>';
+    d.querySelector('.ac-fait').addEventListener('click', () => { ecrireAC(lireAC().filter(x => !(x.nom===r.nom && x.prenom===r.prenom && x.transport===r.transport))); majACompleter(); });
+    d.querySelector('.ac-comp').addEventListener('click', () => {
+      setMode('modif');
+      $('#mo-nom').value = r.nom; $('#mo-prenom').value = r.prenom;
+      if (r.transport && r.transport >= TODAY){ $('#mo-date').value = r.transport; $('#mo-date').dispatchEvent(new Event('change', { bubbles:true })); }
+      const cb = $('#mq-infos'); cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles:true }));
+      $('#b-infos').scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+    ul.appendChild(d);
+  });
+}
+
 /* Remise à zéro au chargement (certains navigateurs gardent les anciennes valeurs) */
 $('#form').reset(); $('#form-annul').reset(); $('#form-modif').reset();
 $$('#form-modif .mq').forEach(cb => { $('#'+cb.dataset.b).hidden = !cb.checked; });
 setMode('new');
-addRdv(); updDest(); updCond();
+addRdv(); updDest(); updCond(); majManque(); majACompleter();
 })();
 </script>
 </body>
